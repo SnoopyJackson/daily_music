@@ -110,18 +110,23 @@ async function refreshAccessToken(token) {
   return newToken.access_token;
 }
 
+export function isLoggedIn() {
+  const raw = localStorage.getItem(TOKEN_KEY);
+  if (!raw) return false;
+  try {
+    const token = JSON.parse(raw);
+    return !!(token.access_token && (token.refresh_token || Date.now() < token.expires_at));
+  } catch { return false; }
+}
+
+export function logout() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
 export async function getAccessToken() {
   const raw = localStorage.getItem(TOKEN_KEY);
   if (!raw) return null;
   const token = JSON.parse(raw);
   if (Date.now() < token.expires_at - 60_000) return token.access_token;
   return token.refresh_token ? refreshAccessToken(token) : null;
-}
-
-export function isLoggedIn() {
-  return !!localStorage.getItem(TOKEN_KEY);
-}
-
-export function logout() {
-  localStorage.removeItem(TOKEN_KEY);
 }
