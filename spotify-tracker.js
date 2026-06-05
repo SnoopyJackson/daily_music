@@ -11,7 +11,7 @@ function load() {
 }
 
 function fresh() {
-  return { days: {}, knownArtists: [], lastProcessedAt: '' };
+  return { days: {}, knownArtists: [], lastProcessedAt: '', hours: new Array(24).fill(0), dow: new Array(7).fill(0) };
 }
 
 function save(data) {
@@ -31,6 +31,8 @@ export function ingestRecentlyPlayed(items) {
   if (!items?.length) return load();
 
   const data = load();
+  if (!data.hours) data.hours = new Array(24).fill(0);
+  if (!data.dow) data.dow = new Array(7).fill(0);
   const lastProcessed = data.lastProcessedAt || '';
 
   const sorted = [...items]
@@ -52,6 +54,13 @@ export function ingestRecentlyPlayed(items) {
     const day = data.days[date];
     day.plays++;
     day.ms += track.duration_ms || 0;
+
+    // Track hour-of-day and day-of-week
+    const playedDate = new Date(item.played_at);
+    const hour = playedDate.getHours();
+    const dow = playedDate.getDay();
+    data.hours[hour] = (data.hours[hour] || 0) + 1;
+    data.dow[dow] = (data.dow[dow] || 0) + 1;
 
     if (!day._t.includes(track.id)) day._t.push(track.id);
 
@@ -162,5 +171,7 @@ export function getOverviewStats(trackerData) {
     activity,
     maxActivityMin,
     totalKnownArtists: data.knownArtists?.length || 0,
+    hours: data.hours || new Array(24).fill(0),
+    dow: data.dow || new Array(7).fill(0),
   };
 }

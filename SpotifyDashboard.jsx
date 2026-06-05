@@ -5,6 +5,7 @@ import {
   getRecentlyPlayed, getNowPlaying, getPlaylists,
 } from "./spotify-api.js";
 import { ingestRecentlyPlayed, getOverviewStats } from "./spotify-tracker.js";
+import { DonutChart, HBarChart, HourChart, DowChart, Heatmap, NetworkGraph } from "./spotify-charts.jsx";
 import "./spotify-dashboard.css";
 
 const TIME_RANGES = [
@@ -170,6 +171,78 @@ export default function SpotifyDashboard() {
   const loyalty = totalTopTracks > 1
     ? Math.round((1 - (artistIdsInTop.size - 1) / (totalTopTracks - 1)) * 100)
     : 0;
+
+  // Genre donut chart data
+  const GENRE_COLORS = ['#1DB954','#FF6B35','#7C3AED','#DC2626','#0891B2','#B45309','#E11D48','#059669','#9333EA','#16A34A'];
+  const genreDonut = topGenres.slice(0, 8).map(([genre, count], i) => ({
+    label: genre, value: count, color: GENRE_COLORS[i % GENRE_COLORS.length],
+  }));
+
+  // Artist bar chart data
+  const artistBars = (topArtists?.items ?? []).slice(0, 10).map(a => ({
+    label: a.name,
+    value: a.popularity ?? 0,
+    sub: (a.genres ?? []).slice(0, 2).join(', '),
+  }));
+
+  // Artist relationship graph: artists connected by shared genres
+  const artistNodes = (topArtists?.items ?? []).slice(0, 10).map((a, i) => ({
+    id: a.id,
+    label: a.name,
+    size: 8 - i * 0.5,
+    color: GENRE_COLORS[i % GENRE_COLORS.length],
+  }));
+  const artistLinks = [];
+  const items = (topArtists?.items ?? []).slice(0, 10);
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i + 1; j < items.length; j++) {
+      const shared = (items[i].genres ?? []).filter(g => (items[j].genres ?? []).includes(g));
+      if (shared.length > 0) {
+        artistLinks.push({ source: items[i].id, target: items[j].id, weight: shared.length });
+      }
+    }
+  }
+
+  // Genre connections graph: genres connected when they co-occur on artists
+  const genreNodes = [];
+  const genreLinkMap = {};
+  const allGenres = new Set();
+  (topArtists?.items ?? []).forEach(a => {
+    const gs = (a.genres ?? []).slice(0, 5);
+    gs.forEach(g => allGenres.add(g));
+    for (let i = 0; i < gs.length; i++) {
+      for (let j = i + 1; j < gs.length; j++) {
+        const key = [gs[i], gs[j]].sort().join('||');
+        genreLinkMap[key] = (genreLinkMap[key] || 0) + 1;
+      }
+    }
+  });
+  const topGenreNames = [...allGenres].slice(0, 15);
+  topGenreNames.forEach((g, i) => {
+    genreNodes.push({ id: g, label: g, size: 6, color: GENRE_COLORS[i % GENRE_COLORS.length] });
+  });
+  const genreLinks = Object.entries(genreLinkMap)
+    .filter(([key]) => {
+      const [a, b] = key.split('||');
+      return topGenreNames.includes(a) && topGenreNames.includes(b);
+    })
+    .map(([key, weight]) => {
+      const [source, target] = key.split('||');
+      return { source, target, weight };
+    });
+
+  // Heatmap data (last 8 weeks = 56 days)
+  const heatmapData = [];
+  for (let i = 55; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    const day = stats.activity?.find(a => a.date === key);
+    heatmapData.push({
+      date: key,
+      minutes: day?.minutes || 0,
+    });
+  }
 
   return (
     <div className="sp-dashboard">
@@ -349,6 +422,68 @@ export default function SpotifyDashboard() {
           <p className="sp-disc-label">Artist Loyalty</p>
         </div>
       </div>
+
+      {/* ── Charts ─────────────────────────────────────────── */}
+
+      {/* Listening Heatmap */}
+      <section className="sp-section">
+        <h3 className="sp-section-title">Listening Heatmap</h3>
+        <Heatmap activity={heatmapData} />
+      </section>
+
+      {/* Hour of Day / Day of Week */}
+      <div className="sp-charts-row">
+        <section className="sp-section sp-chart-half">
+          <h3 className="sp-section-title">By Hour of Day</h3>
+          <HourChart hours={stats.hours} />
+        </section>
+        <section className="sp-section sp-chart-half">
+          <h3 className="sp-section-title">By Day of Week</h3>
+          <DowChart dow={stats.dow} />
+        </section>
+      </div>
+
+      {/* Genre Distribution / Top Artists Bar */}
+      <div className="sp-charts-row">
+        <section className="sp-section sp-chart-half">
+          <h3 className="sp-section-title">Genre Distribution</h3>
+          {genreDonut.length > 0
+            ? <DonutChart data={genreDonut} size={180} />
+            : <SkeletonList rows={3} />
+          }
+        </section>
+        <section className="sp-section sp-chart-half">
+          <h3 className="sp-section-title">Top Artists by Popularity</h3>
+          {artistBars.length > 0
+            ? <HBarChart data={artistBars} />
+            : <SkeletonList rows={5} />
+          }
+        </section>
+      </div>
+
+      {/* ── Network Graphs ─────────────────────────────────── */}
+
+      {/* Artist Relationship */}
+      {artistNodes.length > 2 && artistLinks.length > 0 && (
+        <section className="sp-section">
+          <h3 className="sp-section-title">Artist Relationships</h3>
+          <p className="sp-chart-desc">Artists connected by shared genres</p>
+          <div className="sp-network-wrap">
+            <NetworkGraph nodes={artistNodes} links={artistLinks} width={500} height={320} />
+          </div>
+        </section>
+      )}
+
+      {/* Genre Connections */}
+      {genreNodes.length > 2 && genreLinks.length > 0 && (
+        <section className="sp-section">
+          <h3 className="sp-section-title">Genre Connections</h3>
+          <p className="sp-chart-desc">Genres linked through your top artists</p>
+          <div className="sp-network-wrap">
+            <NetworkGraph nodes={genreNodes} links={genreLinks} width={500} height={320} />
+          </div>
+        </section>
+      )}
 
       {/* Recently Played */}
       {recentlyPlayed?.items?.length > 0 && (

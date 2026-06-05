@@ -860,4 +860,322 @@
   .sp-discovery {
     grid-template-columns: 1fr;
   }
+  .sp-charts-row {
+    flex-direction: column;
+  }
+  .sp-chart-half {
+    min-width: 100%;
+  }
+}
+
+/* ── Charts Common ─────────────────────────────────────────── */
+
+.sp-charts-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.sp-chart-half {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-chart-empty {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+  padding: 24px 0;
+  margin: 0;
+}
+
+.sp-chart-desc {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #555;
+  margin: -8px 0 16px;
+}
+
+/* ── Hour of Day Chart ─────────────────────────────────────── */
+
+.sp-hour-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 120px;
+}
+
+.sp-hour-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.sp-hour-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.sp-hour-bar {
+  width: 100%;
+  background: #1DB954;
+  border-radius: 1px 1px 0 0;
+  transition: height 0.4s ease;
+}
+
+.sp-hour-empty {
+  background: #1a1a1a;
+}
+
+.sp-hour-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 7px;
+  color: #555;
+  margin-top: 4px;
+  height: 12px;
+}
+
+/* ── Day of Week Chart ─────────────────────────────────────── */
+
+.sp-dow-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-dow-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sp-dow-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #888;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.sp-dow-track {
+  flex: 1;
+  height: 12px;
+  background: #1a1a1a;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.sp-dow-fill {
+  height: 100%;
+  background: #1DB954;
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+.sp-dow-empty {
+  background: #1a1a1a;
+}
+
+.sp-dow-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #666;
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ── Donut Chart ───────────────────────────────────────────── */
+
+.sp-donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.sp-donut-svg {
+  flex-shrink: 0;
+}
+
+.sp-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sp-donut-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sp-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sp-legend-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #999;
+  text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.sp-legend-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #555;
+  flex-shrink: 0;
+}
+
+/* ── Horizontal Bar Chart ──────────────────────────────────── */
+
+.sp-hbar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sp-hbar-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sp-hbar-rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #555;
+  width: 16px;
+  text-align: right;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.sp-hbar-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-hbar-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.sp-hbar-label {
+  font-size: 11px;
+  color: #f0ede6;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.sp-hbar-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #666;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.sp-hbar-track {
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sp-hbar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.sp-hbar-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #555;
+  margin-top: 2px;
+  display: block;
+  text-transform: capitalize;
+}
+
+/* ── Heatmap ───────────────────────────────────────────────── */
+
+.sp-heatmap {
+  margin-bottom: 8px;
+}
+
+.sp-heatmap-grid {
+  display: flex;
+  gap: 3px;
+}
+
+.sp-heatmap-week {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.sp-heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  min-width: 10px;
+  min-height: 10px;
+}
+
+.sp-heatmap-labels {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #555;
+}
+
+.sp-heatmap-scale {
+  display: flex;
+  gap: 2px;
+}
+
+.sp-heatmap-scale .sp-heatmap-cell {
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
+}
+
+/* ── Network Graphs ────────────────────────────────────────── */
+
+.sp-network-wrap {
+  background: #0d0d0d;
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.sp-network-svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
