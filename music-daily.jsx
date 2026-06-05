@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Component } from "react";
 import SpotifyDashboard from "./SpotifyDashboard.jsx";
 
 const challenges = [
@@ -182,7 +182,9 @@ export default function App() {
       </header>
 
       {activeTab === "spotify" ? (
-        <SpotifyDashboard />
+        <SpotifyErrorBoundary>
+          <SpotifyDashboard />
+        </SpotifyErrorBoundary>
       ) : showHistory ? (
         <HistoryPanel history={history} onClose={() => setShowHistory(false)} />
       ) : (
@@ -251,6 +253,37 @@ export default function App() {
       )}
     </div>
   );
+}
+
+class SpotifyErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error("SpotifyDashboard crashed:", error, info.componentStack);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ maxWidth: 520, margin: '0 auto', padding: '60px 20px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          <p style={{ fontSize: 36, marginBottom: 16 }}>⚠️</p>
+          <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 20, marginBottom: 12, color: '#f0ede6' }}>Something went wrong</h2>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: '#999', marginBottom: 24, lineHeight: 1.6 }}>
+            {this.state.error?.message || 'An unexpected error occurred in the Spotify Dashboard.'}
+          </p>
+          <button
+            onClick={() => { localStorage.removeItem('spotify_token_v1'); this.setState({ hasError: false, error: null }); }}
+            style={{ background: '#222', color: '#f0ede6', border: '1px solid #333', padding: '10px 20px', borderRadius: 2, cursor: 'pointer', fontFamily: "'DM Mono', monospace", fontSize: 11, letterSpacing: '0.1em' }}
+          >Reset & Retry</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function HistoryPanel({ history }) {

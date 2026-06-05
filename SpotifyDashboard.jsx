@@ -21,6 +21,7 @@ function msToMinSec(ms) {
 export default function SpotifyDashboard() {
   const [loggedIn, setLoggedIn]           = useState(isLoggedIn());
   const [loading, setLoading]             = useState(false);
+  const [error, setError]                 = useState(null);
   const [profile, setProfile]             = useState(null);
   const [nowPlaying, setNowPlaying]       = useState(null);
   const [timeRange, setTimeRange]         = useState("medium_term");
@@ -34,8 +35,14 @@ export default function SpotifyDashboard() {
     if (!window.location.search.includes("code=")) return;
     setLoading(true);
     handleCallback()
-      .then(success => { setLoggedIn(success); })
-      .catch(() => {})
+      .then(success => {
+        if (!success) setError("Login failed — the authorization code may have expired. Please try again.");
+        setLoggedIn(success);
+      })
+      .catch((err) => {
+        console.error("Spotify callback error:", err);
+        setError("Connection to Spotify failed: " + (err.message || "Unknown error"));
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -115,7 +122,7 @@ export default function SpotifyDashboard() {
     );
   }
 
-  if (!loggedIn) return <LoginScreen />;
+  if (!loggedIn) return <LoginScreen error={error} />;
 
   // Derive top genres from top artists
   const genreCount = {};
@@ -275,8 +282,8 @@ export default function SpotifyDashboard() {
 
 /* ── Sub-components ────────────────────────────────────────── */
 
-function LoginScreen() {
-  const redirectUri = window.location.origin;
+function LoginScreen({ error }) {
+  const redirectUri = window.location.origin + window.location.pathname.replace(/\/$/, '') + '/';
   return (
     <div className="sp-login">
       <div className="sp-login-icon">♫</div>
@@ -284,6 +291,11 @@ function LoginScreen() {
       <p className="sp-login-desc">
         Connect your Spotify account to see your top tracks, artists, genres, and listening stats.
       </p>
+      {error && (
+        <div style={{ background: '#2a1515', border: '1px solid #5c2020', borderRadius: 2, padding: '10px 16px', marginBottom: 20, width: '100%', maxWidth: 380, boxSizing: 'border-box' }}>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: '#e88', margin: 0, lineHeight: 1.5 }}>{error}</p>
+        </div>
+      )}
       <button className="sp-login-btn" onClick={initiateLogin}>
         Connect Spotify
       </button>
