@@ -269,7 +269,7 @@ export default function SpotifyDashboard() {
                   : <div className="sp-playlist-img sp-playlist-placeholder">♫</div>
                 }
                 <p className="sp-playlist-name">{pl.name}</p>
-                <p className="sp-playlist-count">{pl.tracks.total} tracks</p>
+                <p className="sp-playlist-count">{pl.tracks?.total ?? 0} tracks</p>
               </a>
             ))}
           </div>
