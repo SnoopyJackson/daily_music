@@ -1,0 +1,666 @@
+/* ============================================================
+   spotify-dashboard.css — Spotify Dashboard styles
+   ============================================================ */
+
+/* Loading */
+.sp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 20px;
+}
+
+.sp-spinner {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #222;
+  border-top-color: #1DB954;
+  border-radius: 50%;
+  animation: sp-spin 0.8s linear infinite;
+}
+
+@keyframes sp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.sp-loading-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #555;
+  letter-spacing: 0.1em;
+}
+
+/* Login screen */
+.sp-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px 20px;
+  text-align: center;
+  max-width: 400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.sp-login-icon {
+  font-size: 56px;
+  color: #1DB954;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.sp-login-title {
+  font-family: 'Georgia', serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px;
+  color: #f0ede6;
+}
+
+.sp-login-desc {
+  font-size: 14px;
+  color: #888;
+  line-height: 1.6;
+  margin: 0 0 28px;
+}
+
+.sp-login-btn {
+  background: #1DB954;
+  color: #000;
+  border: none;
+  padding: 14px 32px;
+  border-radius: 2px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  margin-bottom: 24px;
+}
+
+.sp-login-btn:hover {
+  background: #1ed760;
+  transform: translateY(-1px);
+}
+
+.sp-login-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.sp-login-note a {
+  color: #1DB954;
+  text-decoration: none;
+}
+
+.sp-login-note code {
+  color: #888;
+  background: #161616;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* Redirect URI helper box */
+.sp-login-uri-box {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 2px;
+  padding: 16px 20px;
+  text-align: left;
+  width: 100%;
+  max-width: 380px;
+  box-sizing: border-box;
+}
+
+.sp-login-uri-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: #444;
+  margin: 0 0 10px;
+}
+
+.sp-login-uri {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: #1DB954;
+  background: #161616;
+  padding: 8px 12px;
+  border-radius: 2px;
+  word-break: break-all;
+  margin-bottom: 12px;
+}
+
+.sp-login-uri-hint {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #444;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.sp-login-uri-hint a {
+  color: #1DB954;
+  text-decoration: none;
+}
+
+/* Dashboard wrapper */
+.sp-dashboard {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Profile bar */
+.sp-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.sp-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sp-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #222;
+  color: #555;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.sp-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-profile-name {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #f0ede6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-profile-sub {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 0.08em;
+  text-transform: capitalize;
+}
+
+.sp-logout-btn {
+  background: none;
+  border: 1px solid #2a2a2a;
+  color: #555;
+  padding: 5px 12px;
+  border-radius: 2px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.sp-logout-btn:hover {
+  border-color: #444;
+  color: #888;
+}
+
+/* Now Playing */
+.sp-now-playing {
+  background: #111;
+  border: 1px solid #1DB954;
+  border-radius: 2px;
+  padding: 20px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sp-now-playing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #1DB954;
+}
+
+.sp-now-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #1DB954;
+  margin: 0 0 16px;
+}
+
+.sp-now-inner {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.sp-now-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 2px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.sp-now-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-now-track {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f0ede6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-now-artist {
+  margin: 0 0 2px;
+  font-size: 13px;
+  color: #888;
+}
+
+.sp-now-album {
+  margin: 0 0 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-progress-track {
+  height: 2px;
+  background: #222;
+  border-radius: 1px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.sp-progress-fill {
+  height: 100%;
+  background: #1DB954;
+  border-radius: 1px;
+  transition: width 1s linear;
+}
+
+.sp-now-times {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #444;
+}
+
+/* Stats header */
+.sp-stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sp-stats-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #444;
+  margin: 0;
+}
+
+.sp-time-tabs {
+  display: flex;
+  gap: 2px;
+  background: #161616;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 3px;
+}
+
+.sp-time-tab {
+  background: none;
+  border: none;
+  color: #555;
+  padding: 5px 12px;
+  border-radius: 1px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sp-time-tab.active {
+  background: #222;
+  color: #f0ede6;
+}
+
+/* Sections */
+.sp-section {
+  margin-bottom: 40px;
+}
+
+.sp-section-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: #444;
+  text-transform: uppercase;
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+/* Track list */
+.sp-track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sp-track-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+
+.sp-track-row:hover {
+  background: #111;
+}
+
+.sp-rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #333;
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sp-track-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #1a1a1a;
+}
+
+.sp-track-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-track-name {
+  margin: 0 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #f0ede6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-track-artist {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-track-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #444;
+  flex-shrink: 0;
+}
+
+/* Artist grid */
+.sp-artist-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .sp-artist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.sp-artist-card {
+  position: relative;
+  text-align: center;
+}
+
+.sp-artist-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin-bottom: 10px;
+  background: #1a1a1a;
+}
+
+.sp-artist-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  background: #161616;
+  border-radius: 50%;
+}
+
+.sp-artist-rank {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #f0ede6;
+  background: rgba(0,0,0,0.7);
+  padding: 2px 5px;
+  border-radius: 2px;
+}
+
+.sp-artist-name {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f0ede6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-artist-genre {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #444;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Genres */
+.sp-genre-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sp-genre-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sp-genre-rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #333;
+  width: 18px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sp-genre-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #888;
+  width: 160px;
+  flex-shrink: 0;
+  text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-genre-bar-track {
+  flex: 1;
+  height: 2px;
+  background: #1a1a1a;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.sp-genre-bar-fill {
+  height: 100%;
+  background: #1DB954;
+  border-radius: 1px;
+  transition: width 0.6s ease;
+}
+
+/* Playlists */
+.sp-playlist-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .sp-playlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.sp-playlist-card {
+  display: block;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.sp-playlist-card:hover {
+  opacity: 0.8;
+}
+
+.sp-playlist-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  margin-bottom: 8px;
+  background: #1a1a1a;
+}
+
+.sp-playlist-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #333;
+  background: #161616;
+  border-radius: 2px;
+}
+
+.sp-playlist-name {
+  margin: 0 0 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f0ede6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-playlist-count {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #444;
+}
+
+/* Skeletons */
+@keyframes sp-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.sp-skeleton-row {
+  height: 56px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #111 25%, #181818 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: sp-shimmer 1.4s infinite;
+  margin-bottom: 4px;
+}
+
+.sp-skeleton-card {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #111 25%, #181818 50%, #111 75%);
+  background-size: 200% 100%;
+  animation: sp-shimmer 1.4s infinite;
+}
