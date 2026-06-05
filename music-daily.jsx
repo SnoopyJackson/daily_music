@@ -183,7 +183,7 @@ export default function App() {
 
       {activeTab === "spotify" ? (
         <SpotifyErrorBoundary>
-          <SpotifyDashboard />
+          <SpotifyDashboard challenge={accepted ? challenge : null} />
         </SpotifyErrorBoundary>
       ) : showHistory ? (
         <HistoryPanel history={history} onClose={() => setShowHistory(false)} />

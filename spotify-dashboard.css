@@ -1179,3 +1179,344 @@
   width: 100%;
   height: auto;
 }
+
+/* ── Challenge Recommendations ─────────────────────────────── */
+
+.sp-recs {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-left: 3px solid;
+  border-radius: 2px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.sp-recs-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.sp-recs-emoji {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sp-recs-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #888;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+
+.sp-recs-challenge {
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Georgia', serif;
+  margin: 0 0 6px;
+}
+
+.sp-recs-desc {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sp-recs-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: #555;
+  margin: 0 0 16px;
+  padding-top: 16px;
+  border-top: 1px solid #1e1e1e;
+}
+
+.sp-recs-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #888;
+}
+
+.sp-recs-section {
+  margin-bottom: 20px;
+}
+
+.sp-recs-section:last-child {
+  margin-bottom: 0;
+}
+
+.sp-recs-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #888;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.sp-recs-artist-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.sp-recs-artist {
+  text-align: center;
+}
+
+.sp-recs-artist-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin-bottom: 6px;
+  background: #1a1a1a;
+}
+
+.sp-recs-artist-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #333;
+  background: #161616;
+  border-radius: 50%;
+}
+
+.sp-recs-artist-name {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #f0ede6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-recs-artist-genre {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #666;
+  text-transform: capitalize;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-recs-empty {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+  padding: 20px 0;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .sp-recs-artist-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Library Search ────────────────────────────────────────── */
+
+.sp-search-section {
+  background: #0d0d0d;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 24px;
+}
+
+.sp-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.sp-search-input {
+  flex: 1;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 2px;
+  padding: 10px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: #f0ede6;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sp-search-input:focus {
+  border-color: #1DB954;
+}
+
+.sp-search-input::placeholder {
+  color: #555;
+}
+
+.sp-search-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sp-search-filters {
+  display: flex;
+  gap: 2px;
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 3px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.sp-filter-tab {
+  background: none;
+  border: none;
+  color: #555;
+  padding: 6px 14px;
+  border-radius: 1px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.sp-filter-tab.active {
+  background: #222;
+  color: #f0ede6;
+}
+
+/* Letter grid */
+.sp-letter-grid {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.sp-letter-btn {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 8px 2px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s;
+}
+
+.sp-letter-btn:hover:not(.disabled) {
+  border-color: #1DB954;
+  background: #161616;
+}
+
+.sp-letter-btn.active {
+  background: #1DB954;
+  border-color: #1DB954;
+}
+
+.sp-letter-btn.active .sp-letter-char {
+  color: #000;
+}
+
+.sp-letter-btn.active .sp-letter-count {
+  color: rgba(0,0,0,0.6);
+}
+
+.sp-letter-btn.disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.sp-letter-char {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f0ede6;
+  line-height: 1;
+}
+
+.sp-letter-count {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #555;
+  line-height: 1;
+}
+
+/* Genre picker */
+.sp-genre-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.sp-genre-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  padding: 5px 10px;
+  border-radius: 2px;
+  border: 1px solid #1e1e1e;
+  background: #111;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: capitalize;
+}
+
+.sp-genre-chip:hover {
+  border-color: #1DB954;
+  color: #f0ede6;
+}
+
+.sp-genre-chip.active {
+  background: #1DB954;
+  border-color: #1DB954;
+  color: #000;
+  font-weight: 600;
+}
+
+/* Search results */
+.sp-search-results {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #1e1e1e;
+}
+
+.sp-search-group {
+  margin-bottom: 24px;
+}
+
+.sp-search-group:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .sp-letter-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}

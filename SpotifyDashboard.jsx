@@ -3,9 +3,11 @@ import { initiateLogin, logout, isLoggedIn, handleCallback } from "./spotify-aut
 import {
   getProfile, getTopTracks, getTopArtists,
   getRecentlyPlayed, getNowPlaying, getPlaylists,
+  getTopTracksAll, getTopArtistsAll, getPlaylistTracks,
 } from "./spotify-api.js";
 import { ingestRecentlyPlayed, getOverviewStats } from "./spotify-tracker.js";
 import { DonutChart, HBarChart, HourChart, DowChart, Heatmap, NetworkGraph } from "./spotify-charts.jsx";
+import { getRecommendationsForChallenge } from "./spotify-recommendations.js";
 import "./spotify-dashboard.css";
 
 const TIME_RANGES = [
@@ -27,7 +29,7 @@ function fmtMin(mins) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-export default function SpotifyDashboard() {
+export default function SpotifyDashboard({ challenge }) {
   const [loggedIn, setLoggedIn]           = useState(isLoggedIn());
   const [loading, setLoading]             = useState(false);
   const [error, setError]                 = useState(null);
@@ -39,6 +41,10 @@ export default function SpotifyDashboard() {
   const [recentlyPlayed, setRecentlyPlayed] = useState(null);
   const [playlists, setPlaylists]         = useState(null);
   const [stats, setStats]                 = useState(() => getOverviewStats());
+  const [recs, setRecs]                   = useState(null);
+  const [recsLoading, setRecsLoading]     = useState(false);
+  const [library, setLibrary]             = useState(null);
+  const [libraryLoading, setLibraryLoading] = useState(false);
 
   // Handle OAuth callback redirect
   useEffect(() => {
@@ -113,6 +119,50 @@ export default function SpotifyDashboard() {
     }, 30_000);
     return () => clearInterval(id);
   }, [loggedIn]);
+
+  // Load full library (used by recommendations + search)
+  useEffect(() => {
+    if (!loggedIn || !playlists) return;
+    setLibraryLoading(true);
+    (async () => {
+      try {
+        const [allArtists, allTracks] = await Promise.all([
+          getTopArtistsAll(),
+          getTopTracksAll(),
+        ]);
+        const plItems = playlists?.items?.slice(0, 8) ?? [];
+        const playlistTracksArrays = await Promise.all(
+          plItems.map(pl => getPlaylistTracks(pl.id, 100).then(r => (r?.items ?? []).map(i => i?.track).filter(Boolean)))
+        );
+        const allPlaylistTracks = playlistTracksArrays.flat();
+        setLibrary({ artists: allArtists, tracks: allTracks, playlistTracks: allPlaylistTracks });
+      } catch (err) {
+        console.error("Library load error:", err);
+        setLibrary({ artists: [], tracks: [], playlistTracks: [] });
+      } finally {
+        setLibraryLoading(false);
+      }
+    })();
+  }, [loggedIn, playlists]);
+
+  // Load recommendations when challenge is active
+  useEffect(() => {
+    if (!loggedIn || !challenge || !library) { setRecs(null); return; }
+    setRecsLoading(true);
+    try {
+      const result = getRecommendationsForChallenge(challenge, {
+        topArtists: library.artists,
+        topTracks: library.tracks,
+        playlistTracks: library.playlistTracks,
+      });
+      setRecs(result);
+    } catch (err) {
+      console.error("Recommendations error:", err);
+      setRecs({ artists: [], tracks: [] });
+    } finally {
+      setRecsLoading(false);
+    }
+  }, [loggedIn, challenge, library]);
 
   function handleLogout() {
     logout();
@@ -268,6 +318,15 @@ export default function SpotifyDashboard() {
       {/* Now Playing */}
       {nowPlaying?.item && (
         <NowPlayingCard track={nowPlaying.item} progress={nowPlaying.progress_ms ?? 0} />
+      )}
+
+      {/* Challenge Recommendations */}
+      {challenge && (
+        <ChallengeRecommendations
+          challenge={challenge}
+          recs={recs}
+          loading={recsLoading}
+        />
       )}
 
       {/* Overview Stats */}
@@ -506,6 +565,9 @@ export default function SpotifyDashboard() {
         </section>
       )}
 
+      {/* Library Search */}
+      <LibrarySearch library={library} loading={libraryLoading} />
+
       {/* Playlists */}
       {playlists?.items?.length > 0 && (
         <section className="sp-section">
@@ -536,6 +598,276 @@ export default function SpotifyDashboard() {
 }
 
 /* ── Sub-components ────────────────────────────────────────── */
+
+function ChallengeRecommendations({ challenge, recs, loading }) {
+  const hasResults = recs && (recs.artists.length > 0 || recs.tracks.length > 0);
+
+  return (
+    <div className="sp-recs" style={{ borderColor: challenge.color }}>
+      <div className="sp-recs-header">
+        <span className="sp-recs-emoji">{challenge.emoji}</span>
+        <div>
+          <p className="sp-recs-title">Today's Challenge</p>
+          <p className="sp-recs-challenge" style={{ color: challenge.color }}>{challenge.title}</p>
+          <p className="sp-recs-desc">{challenge.desc}</p>
+        </div>
+      </div>
+
+      {loading && (
+        <div className="sp-recs-loading">
+          <div className="sp-spinner" style={{ borderTopColor: challenge.color, width: 20, height: 20 }} />
+          <span>Finding matches in your library…</span>
+        </div>
+      )}
+
+      {!loading && hasResults && (
+        <>
+          <p className="sp-recs-subtitle">FROM YOUR LIBRARY</p>
+
+          {recs.artists.length > 0 && (
+            <div className="sp-recs-section">
+              <p className="sp-recs-label">Matching Artists ({recs.artists.length})</p>
+              <div className="sp-recs-artist-grid">
+                {recs.artists.slice(0, 12).map(artist => (
+                  <div key={artist.id} className="sp-recs-artist">
+                    {artist.images?.[1]?.url || artist.images?.[0]?.url
+                      ? <img className="sp-recs-artist-img" src={artist.images[1]?.url ?? artist.images[0]?.url} alt={artist.name} />
+                      : <div className="sp-recs-artist-img sp-recs-artist-placeholder">🎤</div>
+                    }
+                    <p className="sp-recs-artist-name">{artist.name}</p>
+                    {(artist.genres ?? []).length > 0 && (
+                      <p className="sp-recs-artist-genre">{artist.genres[0]}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {recs.tracks.length > 0 && (
+            <div className="sp-recs-section">
+              <p className="sp-recs-label">Matching Tracks ({recs.tracks.length})</p>
+              <div className="sp-track-list">
+                {recs.tracks.slice(0, 10).map((track, i) => (
+                  <div key={track.id || i} className="sp-track-row">
+                    <img className="sp-track-img" src={track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url} alt={track.name} />
+                    <div className="sp-track-info">
+                      <p className="sp-track-name">{track.name}</p>
+                      <p className="sp-track-artist">{(track.artists ?? []).map(a => a.name).join(", ")}</p>
+                    </div>
+                    <span className="sp-track-meta">{track.duration_ms ? msToMinSec(track.duration_ms) : ''}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {!loading && recs && !hasResults && (
+        <p className="sp-recs-empty">No matches found in your library for this challenge. Time to explore!</p>
+      )}
+    </div>
+  );
+}
+
+function LibrarySearch({ library, loading }) {
+  const [query, setQuery] = useState('');
+  const [filterType, setFilterType] = useState('all'); // all, letter, genre
+  const [selectedLetter, setSelectedLetter] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [showResults, setShowResults] = useState(false);
+
+  // Build deduplicated artist list with genres
+  const allArtistMap = {};
+  if (library) {
+    for (const a of (library.artists ?? [])) {
+      if (a?.id) allArtistMap[a.id] = a;
+    }
+    for (const t of [...(library.tracks ?? []), ...(library.playlistTracks ?? [])]) {
+      for (const a of (t?.artists ?? [])) {
+        if (a?.id && !allArtistMap[a.id]) {
+          allArtistMap[a.id] = { id: a.id, name: a.name, genres: [], images: [], _fromPlaylist: true };
+        }
+      }
+    }
+  }
+  const allArtists = Object.values(allArtistMap);
+
+  // Collect all unique genres
+  const genreSet = new Set();
+  allArtists.forEach(a => (a.genres ?? []).forEach(g => genreSet.add(g)));
+  const allGenres = [...genreSet].sort();
+
+  // All tracks deduplicated
+  const allTrackMap = {};
+  if (library) {
+    for (const t of [...(library.tracks ?? []), ...(library.playlistTracks ?? [])]) {
+      if (t?.id && !allTrackMap[t.id]) allTrackMap[t.id] = t;
+    }
+  }
+  const allTracks = Object.values(allTrackMap);
+
+  // Filter
+  let filteredArtists = allArtists;
+  let filteredTracks = allTracks;
+
+  if (filterType === 'letter' && selectedLetter) {
+    const letter = selectedLetter.toUpperCase();
+    filteredArtists = allArtists.filter(a => a.name?.toUpperCase().startsWith(letter));
+    const matchedIds = new Set(filteredArtists.map(a => a.id));
+    filteredTracks = allTracks.filter(t => (t.artists ?? []).some(a => matchedIds.has(a.id)));
+  } else if (filterType === 'genre' && selectedGenre) {
+    const g = selectedGenre.toLowerCase();
+    filteredArtists = allArtists.filter(a =>
+      (a.genres ?? []).some(ag => ag.toLowerCase().includes(g) || g.includes(ag.toLowerCase()))
+    );
+    const matchedIds = new Set(filteredArtists.map(a => a.id));
+    filteredTracks = allTracks.filter(t => (t.artists ?? []).some(a => matchedIds.has(a.id)));
+  }
+
+  if (query.trim()) {
+    const q = query.trim().toLowerCase();
+    filteredArtists = filteredArtists.filter(a =>
+      a.name?.toLowerCase().includes(q) ||
+      (a.genres ?? []).some(g => g.toLowerCase().includes(q))
+    );
+    filteredTracks = filteredTracks.filter(t =>
+      t.name?.toLowerCase().includes(q) ||
+      (t.artists ?? []).some(a => a.name?.toLowerCase().includes(q)) ||
+      t.album?.name?.toLowerCase().includes(q)
+    );
+  }
+
+  const hasFilter = query.trim() || (filterType === 'letter' && selectedLetter) || (filterType === 'genre' && selectedGenre);
+  const hasResults = filteredArtists.length > 0 || filteredTracks.length > 0;
+
+  // Sort filtered artists by popularity
+  filteredArtists.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
+
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+  return (
+    <section className="sp-section sp-search-section">
+      <h3 className="sp-section-title">Search Your Library</h3>
+
+      {loading && (
+        <div className="sp-recs-loading">
+          <div className="sp-spinner" style={{ width: 20, height: 20 }} />
+          <span>Loading your library…</span>
+        </div>
+      )}
+
+      {!loading && library && (
+        <>
+          {/* Search bar */}
+          <div className="sp-search-bar">
+            <input
+              className="sp-search-input"
+              type="text"
+              placeholder="Search artists, tracks, albums…"
+              value={query}
+              onChange={e => { setQuery(e.target.value); setShowResults(true); }}
+              onFocus={() => setShowResults(true)}
+            />
+            <span className="sp-search-count">{allArtists.length} artists · {allTracks.length} tracks</span>
+          </div>
+
+          {/* Filter tabs */}
+          <div className="sp-search-filters">
+            <button className={`sp-filter-tab${filterType === 'all' ? ' active' : ''}`}
+              onClick={() => { setFilterType('all'); setSelectedLetter(''); setSelectedGenre(''); setShowResults(true); }}>All</button>
+            <button className={`sp-filter-tab${filterType === 'letter' ? ' active' : ''}`}
+              onClick={() => { setFilterType('letter'); setShowResults(true); }}>By Letter</button>
+            <button className={`sp-filter-tab${filterType === 'genre' ? ' active' : ''}`}
+              onClick={() => { setFilterType('genre'); setShowResults(true); }}>By Genre</button>
+          </div>
+
+          {/* Letter picker */}
+          {filterType === 'letter' && (
+            <div className="sp-letter-grid">
+              {LETTERS.map(l => {
+                const count = allArtists.filter(a => a.name?.toUpperCase().startsWith(l)).length;
+                return (
+                  <button
+                    key={l}
+                    className={`sp-letter-btn${selectedLetter === l ? ' active' : ''}${count === 0 ? ' disabled' : ''}`}
+                    onClick={() => { setSelectedLetter(selectedLetter === l ? '' : l); setShowResults(true); }}
+                    disabled={count === 0}
+                  >
+                    <span className="sp-letter-char">{l}</span>
+                    <span className="sp-letter-count">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Genre picker */}
+          {filterType === 'genre' && (
+            <div className="sp-genre-picker">
+              {allGenres.slice(0, 40).map(g => (
+                <button
+                  key={g}
+                  className={`sp-genre-chip${selectedGenre === g ? ' active' : ''}`}
+                  onClick={() => { setSelectedGenre(selectedGenre === g ? '' : g); setShowResults(true); }}
+                >{g}</button>
+              ))}
+            </div>
+          )}
+
+          {/* Results */}
+          {showResults && hasFilter && (
+            <div className="sp-search-results">
+              {hasResults ? (
+                <>
+                  {filteredArtists.length > 0 && (
+                    <div className="sp-search-group">
+                      <p className="sp-recs-label">Artists ({filteredArtists.length})</p>
+                      <div className="sp-recs-artist-grid">
+                        {filteredArtists.slice(0, 18).map(artist => (
+                          <div key={artist.id} className="sp-recs-artist">
+                            {artist.images?.[1]?.url || artist.images?.[0]?.url
+                              ? <img className="sp-recs-artist-img" src={artist.images[1]?.url ?? artist.images[0]?.url} alt={artist.name} />
+                              : <div className="sp-recs-artist-img sp-recs-artist-placeholder">🎤</div>
+                            }
+                            <p className="sp-recs-artist-name">{artist.name}</p>
+                            {(artist.genres ?? []).length > 0 && (
+                              <p className="sp-recs-artist-genre">{artist.genres[0]}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {filteredTracks.length > 0 && (
+                    <div className="sp-search-group">
+                      <p className="sp-recs-label">Tracks ({filteredTracks.length})</p>
+                      <div className="sp-track-list">
+                        {filteredTracks.slice(0, 15).map((track, i) => (
+                          <div key={track.id || i} className="sp-track-row">
+                            <img className="sp-track-img" src={track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url} alt={track.name} />
+                            <div className="sp-track-info">
+                              <p className="sp-track-name">{track.name}</p>
+                              <p className="sp-track-artist">{(track.artists ?? []).map(a => a.name).join(', ')}</p>
+                            </div>
+                            <span className="sp-track-meta">{track.duration_ms ? msToMinSec(track.duration_ms) : ''}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="sp-recs-empty">No matches found.</p>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
 
 function LoginScreen({ error }) {
   const redirectUri = window.location.origin + window.location.pathname.replace(/\/$/, '') + '/';
