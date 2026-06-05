@@ -127,7 +127,7 @@ export default function SpotifyDashboard() {
   // Derive top genres from top artists
   const genreCount = {};
   (topArtists?.items ?? []).forEach(a =>
-    a.genres.forEach(g => { genreCount[g] = (genreCount[g] || 0) + 1; })
+    (a.genres ?? []).forEach(g => { genreCount[g] = (genreCount[g] || 0) + 1; })
   );
   const topGenres = Object.entries(genreCount)
     .sort((a, b) => b[1] - a[1])
@@ -199,7 +199,7 @@ export default function SpotifyDashboard() {
                   }
                   <span className="sp-artist-rank">#{i + 1}</span>
                   <p className="sp-artist-name">{artist.name}</p>
-                  <p className="sp-artist-genre">{artist.genres[0] ?? "—"}</p>
+                  <p className="sp-artist-genre">{artist.genres?.[0] ?? "—"}</p>
                 </div>
               ))}
             </div>
@@ -235,12 +235,12 @@ export default function SpotifyDashboard() {
         <section className="sp-section">
           <h3 className="sp-section-title">Recently Played</h3>
           <div className="sp-track-list">
-            {recentlyPlayed.items.map((item, i) => (
+            {recentlyPlayed.items.filter(item => item.track).map((item, i) => (
               <div key={`${item.track.id}-${i}`} className="sp-track-row">
-                <img className="sp-track-img" src={item.track.album.images[2]?.url} alt={item.track.name} />
+                <img className="sp-track-img" src={item.track.album?.images?.[2]?.url ?? item.track.album?.images?.[0]?.url} alt={item.track.name} />
                 <div className="sp-track-info">
                   <p className="sp-track-name">{item.track.name}</p>
-                  <p className="sp-track-artist">{item.track.artists.map(a => a.name).join(", ")}</p>
+                  <p className="sp-track-artist">{(item.track.artists ?? []).map(a => a.name).join(", ")}</p>
                 </div>
                 <span className="sp-track-meta">
                   {new Date(item.played_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
@@ -260,7 +260,7 @@ export default function SpotifyDashboard() {
               <a
                 key={pl.id}
                 className="sp-playlist-card"
-                href={pl.external_urls.spotify}
+                href={pl.external_urls?.spotify ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -321,13 +321,13 @@ function NowPlayingCard({ track, progress }) {
       <div className="sp-now-inner">
         <img
           className="sp-now-img"
-          src={track.album.images[1]?.url ?? track.album.images[0]?.url}
+          src={track.album?.images?.[1]?.url ?? track.album?.images?.[0]?.url}
           alt={track.name}
         />
         <div className="sp-now-info">
           <p className="sp-now-track">{track.name}</p>
-          <p className="sp-now-artist">{track.artists.map(a => a.name).join(", ")}</p>
-          <p className="sp-now-album">{track.album.name}</p>
+          <p className="sp-now-artist">{(track.artists ?? []).map(a => a.name).join(", ")}</p>
+          <p className="sp-now-album">{track.album?.name}</p>
           <div className="sp-progress-track">
             <div className="sp-progress-fill" style={{ width: `${pct}%` }} />
           </div>
@@ -347,10 +347,10 @@ function TrackList({ tracks, showRank }) {
       {tracks.map((track, i) => (
         <div key={track.id} className="sp-track-row">
           {showRank && <span className="sp-rank">{i + 1}</span>}
-          <img className="sp-track-img" src={track.album.images[2]?.url} alt={track.name} />
+          <img className="sp-track-img" src={track.album?.images?.[2]?.url ?? track.album?.images?.[0]?.url} alt={track.name} />
           <div className="sp-track-info">
             <p className="sp-track-name">{track.name}</p>
-            <p className="sp-track-artist">{track.artists.map(a => a.name).join(", ")}</p>
+            <p className="sp-track-artist">{(track.artists ?? []).map(a => a.name).join(", ")}</p>
           </div>
           <span className="sp-track-meta">{msToMinSec(track.duration_ms)}</span>
         </div>
