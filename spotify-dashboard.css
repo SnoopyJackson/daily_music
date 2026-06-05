@@ -664,3 +664,200 @@
   background-size: 200% 100%;
   animation: sp-shimmer 1.4s infinite;
 }
+
+/* ── Overview Stats ────────────────────────────────────────── */
+
+.sp-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.sp-stat-card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 18px 16px;
+}
+
+.sp-stat-icon {
+  font-size: 18px;
+  margin: 0 0 8px;
+  line-height: 1;
+}
+
+.sp-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #f0ede6;
+  margin: 0 0 4px;
+  font-family: 'Georgia', serif;
+}
+
+.sp-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #888;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.sp-stat-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #555;
+  margin: 5px 0 0;
+}
+
+/* ── Listening Activity ────────────────────────────────────── */
+
+.sp-activity-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 140px;
+  padding: 0;
+}
+
+.sp-activity-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 100%;
+}
+
+.sp-activity-bar {
+  width: 100%;
+  border-radius: 2px 2px 0 0;
+  background: #1DB954;
+  transition: height 0.4s ease;
+}
+
+.sp-activity-empty {
+  background: #1a1a1a;
+}
+
+.sp-activity-day {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.sp-activity-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: #888;
+}
+
+/* ── Top Albums ────────────────────────────────────────────── */
+
+.sp-album-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.sp-album-card {
+  text-align: center;
+}
+
+.sp-album-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  margin-bottom: 8px;
+  background: #1a1a1a;
+}
+
+.sp-album-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #333;
+  background: #161616;
+  border-radius: 2px;
+}
+
+.sp-album-name {
+  margin: 0 0 3px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #f0ede6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-album-artist {
+  margin: 0 0 2px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-album-count {
+  margin: 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #555;
+}
+
+/* ── Discovery & Loyalty ───────────────────────────────────── */
+
+.sp-discovery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.sp-disc-card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 2px;
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.sp-disc-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1DB954;
+  margin: 0 0 6px;
+  font-family: 'Georgia', serif;
+}
+
+.sp-disc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: #888;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .sp-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sp-album-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sp-discovery {
+    grid-template-columns: 1fr;
+  }
+}

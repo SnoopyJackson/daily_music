@@ -4,6 +4,7 @@ import {
   getProfile, getTopTracks, getTopArtists,
   getRecentlyPlayed, getNowPlaying, getPlaylists,
 } from "./spotify-api.js";
+import { ingestRecentlyPlayed, getOverviewStats } from "./spotify-tracker.js";
 import "./spotify-dashboard.css";
 
 const TIME_RANGES = [
@@ -18,6 +19,13 @@ function msToMinSec(ms) {
   return `${min}:${sec.toString().padStart(2, "0")}`;
 }
 
+function fmtMin(mins) {
+  if (mins < 60) return `${mins}m`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
 export default function SpotifyDashboard() {
   const [loggedIn, setLoggedIn]           = useState(isLoggedIn());
   const [loading, setLoading]             = useState(false);
@@ -29,6 +37,7 @@ export default function SpotifyDashboard() {
   const [topArtists, setTopArtists]       = useState(null);
   const [recentlyPlayed, setRecentlyPlayed] = useState(null);
   const [playlists, setPlaylists]         = useState(null);
+  const [stats, setStats]                 = useState(() => getOverviewStats());
 
   // Handle OAuth callback redirect
   useEffect(() => {
@@ -52,7 +61,7 @@ export default function SpotifyDashboard() {
     Promise.all([
       getProfile(),
       getNowPlaying(),
-      getRecentlyPlayed(10),
+      getRecentlyPlayed(50),
       getPlaylists(12),
     ]).then(([p, np, rp, pl]) => {
       if (!p && !isLoggedIn()) {
@@ -63,6 +72,8 @@ export default function SpotifyDashboard() {
       setNowPlaying(np);
       setRecentlyPlayed(rp);
       setPlaylists(pl);
+      const tracked = ingestRecentlyPlayed(rp?.items);
+      setStats(getOverviewStats(tracked));
     }).catch(() => {
       if (!isLoggedIn()) setLoggedIn(false);
     });
@@ -134,6 +145,32 @@ export default function SpotifyDashboard() {
     .slice(0, 10);
   const maxGenreCount = topGenres[0]?.[1] ?? 1;
 
+  // Derive top albums from top tracks
+  const albumMap = {};
+  (topTracks?.items ?? []).forEach(track => {
+    const album = track.album;
+    if (!album?.id) return;
+    if (!albumMap[album.id]) {
+      albumMap[album.id] = {
+        id: album.id,
+        name: album.name,
+        images: album.images,
+        artist: (track.artists ?? []).map(a => a.name).join(", "),
+        count: 0,
+      };
+    }
+    albumMap[album.id].count++;
+  });
+  const topAlbums = Object.values(albumMap).sort((a, b) => b.count - a.count).slice(0, 8);
+
+  // Artist loyalty: how concentrated are your top tracks among few artists?
+  const artistIdsInTop = new Set();
+  (topTracks?.items ?? []).forEach(t => (t.artists ?? []).forEach(a => { if (a.id) artistIdsInTop.add(a.id); }));
+  const totalTopTracks = topTracks?.items?.length || 0;
+  const loyalty = totalTopTracks > 1
+    ? Math.round((1 - (artistIdsInTop.size - 1) / (totalTopTracks - 1)) * 100)
+    : 0;
+
   return (
     <div className="sp-dashboard">
 
@@ -160,6 +197,53 @@ export default function SpotifyDashboard() {
         <NowPlayingCard track={nowPlaying.item} progress={nowPlaying.progress_ms ?? 0} />
       )}
 
+      {/* Overview Stats */}
+      <div className="sp-overview">
+        <div className="sp-stat-card">
+          <p className="sp-stat-icon">🎧</p>
+          <p className="sp-stat-value">{fmtMin(stats.today.minutes)}</p>
+          <p className="sp-stat-label">Today</p>
+          <p className="sp-stat-sub">{stats.today.tracks} plays · {stats.today.uniqueArtists} artists</p>
+        </div>
+        <div className="sp-stat-card">
+          <p className="sp-stat-icon">📅</p>
+          <p className="sp-stat-value">{fmtMin(stats.week.minutes)}</p>
+          <p className="sp-stat-label">This Week</p>
+          <p className="sp-stat-sub">{stats.week.tracks} plays</p>
+        </div>
+        <div className="sp-stat-card">
+          <p className="sp-stat-icon">📊</p>
+          <p className="sp-stat-value">{fmtMin(stats.month.minutes)}</p>
+          <p className="sp-stat-label">This Month</p>
+          <p className="sp-stat-sub">{stats.month.tracks} plays · {stats.month.artists} artists</p>
+        </div>
+        <div className="sp-stat-card">
+          <p className="sp-stat-icon">🔥</p>
+          <p className="sp-stat-value">{stats.streak}</p>
+          <p className="sp-stat-label">Day Streak</p>
+          <p className="sp-stat-sub">avg {fmtMin(stats.avgDailyMinutes)}/day</p>
+        </div>
+      </div>
+
+      {/* Listening Activity */}
+      {stats.activity.some(a => a.minutes > 0) && (
+        <section className="sp-section">
+          <h3 className="sp-section-title">Listening Activity</h3>
+          <div className="sp-activity-chart">
+            {stats.activity.map(a => (
+              <div key={a.date} className="sp-activity-col">
+                {a.minutes > 0 && <span className="sp-activity-val">{a.minutes}m</span>}
+                <div
+                  className={`sp-activity-bar${a.minutes === 0 ? " sp-activity-empty" : ""}`}
+                  style={{ height: `${Math.max((a.minutes / stats.maxActivityMin) * 100, a.minutes > 0 ? 8 : 3)}%` }}
+                />
+                <span className="sp-activity-day">{a.day}{a.num}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Stats section header */}
       <div className="sp-stats-header">
         <p className="sp-stats-label">YOUR TOP STATS</p>
@@ -184,6 +268,26 @@ export default function SpotifyDashboard() {
           : <SkeletonList rows={10} />
         }
       </section>
+
+      {/* Top Albums */}
+      {topAlbums.length > 0 && (
+        <section className="sp-section">
+          <h3 className="sp-section-title">Top Albums</h3>
+          <div className="sp-album-grid">
+            {topAlbums.map(album => (
+              <div key={album.id} className="sp-album-card">
+                {album.images?.[1]?.url
+                  ? <img className="sp-album-img" src={album.images[1].url} alt={album.name} />
+                  : <div className="sp-album-img sp-album-placeholder">💿</div>
+                }
+                <p className="sp-album-name">{album.name}</p>
+                <p className="sp-album-artist">{album.artist}</p>
+                <p className="sp-album-count">{album.count} top track{album.count > 1 ? "s" : ""}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Top Artists */}
       <section className="sp-section">
@@ -230,12 +334,28 @@ export default function SpotifyDashboard() {
         </section>
       )}
 
+      {/* Discovery & Loyalty */}
+      <div className="sp-discovery">
+        <div className="sp-disc-card">
+          <p className="sp-disc-value">{stats.month.newArtists}</p>
+          <p className="sp-disc-label">New Artists This Month</p>
+        </div>
+        <div className="sp-disc-card">
+          <p className="sp-disc-value">{stats.totalKnownArtists}</p>
+          <p className="sp-disc-label">Artists Discovered</p>
+        </div>
+        <div className="sp-disc-card">
+          <p className="sp-disc-value">{loyalty}%</p>
+          <p className="sp-disc-label">Artist Loyalty</p>
+        </div>
+      </div>
+
       {/* Recently Played */}
       {recentlyPlayed?.items?.length > 0 && (
         <section className="sp-section">
           <h3 className="sp-section-title">Recently Played</h3>
           <div className="sp-track-list">
-            {recentlyPlayed.items.filter(item => item.track).map((item, i) => (
+            {recentlyPlayed.items.filter(item => item.track).slice(0, 10).map((item, i) => (
               <div key={`${item.track.id}-${i}`} className="sp-track-row">
                 <img className="sp-track-img" src={item.track.album?.images?.[2]?.url ?? item.track.album?.images?.[0]?.url} alt={item.track.name} />
                 <div className="sp-track-info">
