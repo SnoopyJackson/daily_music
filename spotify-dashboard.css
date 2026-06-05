@@ -897,6 +897,98 @@
   margin: -8px 0 16px;
 }
 
+/* ── Taste Profile ─────────────────────────────────────────── */
+
+.sp-taste-wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.sp-radar-svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+.sp-taste-metrics {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sp-taste-row-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.sp-taste-icon {
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sp-taste-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #f0ede6;
+  flex-shrink: 0;
+}
+
+.sp-taste-desc {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: #555;
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sp-taste-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #f0ede6;
+  flex-shrink: 0;
+  min-width: 36px;
+  text-align: right;
+}
+
+.sp-taste-bar-track {
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sp-taste-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 600px) {
+  .sp-taste-wrap {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  .sp-radar-svg {
+    width: 200px;
+    height: 200px;
+  }
+  .sp-taste-metrics {
+    width: 100%;
+  }
+}
+
 /* ── Hour of Day Chart ─────────────────────────────────────── */
 
 .sp-hour-chart {

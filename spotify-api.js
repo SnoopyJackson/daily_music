@@ -73,3 +73,6 @@ export const searchArtists = (query, limit = 10) =>
 
 export const searchTracks = (query, limit = 10) =>
   apiFetch(`/search?q=${encodeURIComponent(query)}&type=track&limit=${limit}`);
+
+export const getAudioFeatures = (trackIds) =>
+  apiFetch(`/audio-features?ids=${trackIds.slice(0, 100).join(',')}`);

@@ -182,6 +182,91 @@ export function Heatmap({ activity }) {
   );
 }
 
+/* ── Radar Chart ───────────────────────────────────────────── */
+export function RadarChart({ data, size = 220 }) {
+  // data: [{ label, icon, value }]  — values 0..1
+  const n = data.length;
+  if (n < 3) return null;
+
+  const cx = size / 2;
+  const cy = size / 2;
+  const R  = size / 2 - 42; // room for labels
+
+  const ang   = (i) => -Math.PI / 2 + (2 * Math.PI * i) / n;
+  const pt    = (i, r) => [cx + r * Math.cos(ang(i)), cy + r * Math.sin(ang(i))];
+  const polyPts = (scale) => data.map((_, i) => pt(i, scale * R).join(',')).join(' ');
+
+  const valuePts = data.map((d, i) => pt(i, Math.max(0.04, d.value) * R).join(',')).join(' ');
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="sp-radar-svg">
+      {/* Grid rings */}
+      {[0.25, 0.5, 0.75, 1.0].map(level => (
+        <polygon key={level} points={polyPts(level)}
+          fill="none"
+          stroke={level === 1.0 ? '#2a2a2a' : '#1a1a1a'}
+          strokeWidth={level === 1.0 ? 1.5 : 1} />
+      ))}
+
+      {/* Axis lines */}
+      {data.map((_, i) => {
+        const [x, y] = pt(i, R);
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#222" strokeWidth="1" />;
+      })}
+
+      {/* Grid value labels (25 / 50 / 75) on first axis */}
+      {[0.25, 0.5, 0.75].map(level => {
+        const [x, y] = pt(0, level * R);
+        return (
+          <text key={level} x={x + 4} y={y} fill="#444"
+            fontSize="7" fontFamily="'DM Mono', monospace" dominantBaseline="middle">
+            {Math.round(level * 100)}
+          </text>
+        );
+      })}
+
+      {/* Filled value polygon */}
+      <polygon points={valuePts}
+        fill="#1DB954" fillOpacity="0.18"
+        stroke="#1DB954" strokeWidth="2" strokeLinejoin="round" />
+
+      {/* Dots */}
+      {data.map((d, i) => {
+        const [x, y] = pt(i, Math.max(0.04, d.value) * R);
+        return (
+          <circle key={i} cx={x} cy={y} r="3.5"
+            fill="#1DB954" stroke="#0a0a0a" strokeWidth="1.5" />
+        );
+      })}
+
+      {/* Labels */}
+      {data.map((d, i) => {
+        const a      = ang(i);
+        const cosA   = Math.cos(a);
+        const sinA   = Math.sin(a);
+        const labelR = R + 24;
+        const [lx, ly] = pt(i, labelR);
+        const anchor   = cosA > 0.2 ? 'start' : cosA < -0.2 ? 'end' : 'middle';
+        const baseline = sinA < -0.2 ? 'auto' : sinA > 0.2 ? 'hanging' : 'middle';
+        return (
+          <text key={i} x={lx} y={ly}
+            textAnchor={anchor}
+            dominantBaseline={baseline}
+            fill="#999"
+            fontSize="9"
+            fontFamily="'DM Mono', monospace"
+            letterSpacing="0.06em">
+            {d.icon} {d.label.toUpperCase()}
+          </text>
+        );
+      })}
+
+      {/* Center dot */}
+      <circle cx={cx} cy={cy} r="2" fill="#2a2a2a" />
+    </svg>
+  );
+}
+
 /* ── Network Graph ─────────────────────────────────────────── */
 export function NetworkGraph({ nodes, links, width = 400, height = 300 }) {
   // nodes: [{ id, label, size?, color? }]

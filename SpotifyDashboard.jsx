@@ -4,9 +4,10 @@ import {
   getProfile, getTopTracks, getTopArtists,
   getRecentlyPlayed, getNowPlaying, getPlaylists,
   getTopTracksAll, getTopArtistsAll, getPlaylistTracks,
+  getAudioFeatures,
 } from "./spotify-api.js";
 import { ingestRecentlyPlayed, getOverviewStats } from "./spotify-tracker.js";
-import { DonutChart, HBarChart, HourChart, DowChart, Heatmap, NetworkGraph } from "./spotify-charts.jsx";
+import { DonutChart, HBarChart, HourChart, DowChart, Heatmap, NetworkGraph, RadarChart } from "./spotify-charts.jsx";
 import { getRecommendationsForChallenge } from "./spotify-recommendations.js";
 import "./spotify-dashboard.css";
 
@@ -45,6 +46,7 @@ export default function SpotifyDashboard({ challenge }) {
   const [recsLoading, setRecsLoading]     = useState(false);
   const [library, setLibrary]             = useState(null);
   const [libraryLoading, setLibraryLoading] = useState(false);
+  const [tasteProfile, setTasteProfile]   = useState(null);
 
   // Handle OAuth callback redirect
   useEffect(() => {
@@ -144,6 +146,26 @@ export default function SpotifyDashboard({ challenge }) {
       }
     })();
   }, [loggedIn, playlists]);
+
+  // Load audio features for top tracks → taste profile
+  useEffect(() => {
+    if (!loggedIn || !topTracks?.items?.length) return;
+    const ids = topTracks.items.map(t => t.id).filter(Boolean);
+    if (!ids.length) return;
+    getAudioFeatures(ids).then(data => {
+      const features = (data?.audio_features ?? []).filter(Boolean);
+      if (!features.length) return;
+      const avg = (key) => features.reduce((s, f) => s + (f[key] ?? 0), 0) / features.length;
+      setTasteProfile({
+        energy:        avg('energy'),
+        danceability:  avg('danceability'),
+        valence:       avg('valence'),
+        acousticness:  avg('acousticness'),
+        tempo:         Math.min(1, Math.max(0, (avg('tempo') - 60) / 140)),
+        rawTempo:      Math.round(avg('tempo')),
+      });
+    }).catch(err => console.error('Audio features error:', err));
+  }, [loggedIn, topTracks]);
 
   // Load recommendations when challenge is active
   useEffect(() => {
@@ -462,6 +484,44 @@ export default function SpotifyDashboard({ challenge }) {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Taste Profile */}
+      {tasteProfile && (
+        <section className="sp-section">
+          <h3 className="sp-section-title">Taste Profile</h3>
+          <p className="sp-chart-desc">Average audio features across your top {topTracks?.items?.length ?? 0} tracks</p>
+          <div className="sp-taste-wrap">
+            <RadarChart size={220} data={[
+              { label: 'Energy',    icon: '⚡', value: tasteProfile.energy },
+              { label: 'Dance',     icon: '💃', value: tasteProfile.danceability },
+              { label: 'Happiness', icon: '😊', value: tasteProfile.valence },
+              { label: 'Acoustic',  icon: '🎸', value: tasteProfile.acousticness },
+              { label: 'Tempo',     icon: '🥁', value: tasteProfile.tempo },
+            ]} />
+            <div className="sp-taste-metrics">
+              {[
+                { key: 'energy',       label: 'Energy',       icon: '⚡', desc: 'Intensity & power',       color: '#FF6B35' },
+                { key: 'danceability', label: 'Danceability', icon: '💃', desc: 'Rhythm & groove',          color: '#7C3AED' },
+                { key: 'valence',      label: 'Happiness',    icon: '😊', desc: 'Positivity & mood',        color: '#1DB954' },
+                { key: 'acousticness', label: 'Acoustic',     icon: '🎸', desc: 'Acoustic vs electric',     color: '#0891B2' },
+                { key: 'tempo',        label: 'Tempo',        icon: '🥁', desc: `~${tasteProfile.rawTempo} BPM avg`, color: '#DC2626' },
+              ].map(m => (
+                <div key={m.key} className="sp-taste-row">
+                  <div className="sp-taste-row-top">
+                    <span className="sp-taste-icon">{m.icon}</span>
+                    <span className="sp-taste-label">{m.label}</span>
+                    <span className="sp-taste-desc">{m.desc}</span>
+                    <span className="sp-taste-val">{Math.round(tasteProfile[m.key] * 100)}%</span>
+                  </div>
+                  <div className="sp-taste-bar-track">
+                    <div className="sp-taste-bar-fill" style={{ width: `${tasteProfile[m.key] * 100}%`, background: m.color }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}
