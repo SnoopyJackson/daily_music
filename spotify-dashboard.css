@@ -212,7 +212,7 @@
   margin: 0;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #555;
+  color: #999;
   letter-spacing: 0.08em;
   text-transform: capitalize;
 }
@@ -304,7 +304,7 @@
   margin: 0 0 14px;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #444;
+  color: #888;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -330,7 +330,7 @@
   justify-content: space-between;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #444;
+  color: #888;
 }
 
 /* Stats header */
@@ -347,7 +347,7 @@
   font-family: 'DM Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.3em;
-  color: #444;
+  color: #888;
   margin: 0;
 }
 
@@ -363,7 +363,7 @@
 .sp-time-tab {
   background: none;
   border: none;
-  color: #555;
+  color: #999;
   padding: 5px 12px;
   border-radius: 1px;
   font-family: 'DM Mono', monospace;
@@ -387,7 +387,7 @@
   font-family: 'DM Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.25em;
-  color: #444;
+  color: #888;
   text-transform: uppercase;
   margin: 0 0 16px;
   padding-bottom: 10px;
@@ -417,7 +417,7 @@
 .sp-rank {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
-  color: #333;
+  color: #777;
   width: 20px;
   text-align: right;
   flex-shrink: 0;
@@ -451,7 +451,7 @@
   margin: 0;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #555;
+  color: #999;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -460,7 +460,7 @@
 .sp-track-meta {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #444;
+  color: #888;
   flex-shrink: 0;
 }
 
@@ -527,7 +527,7 @@
   margin: 0;
   font-family: 'DM Mono', monospace;
   font-size: 9px;
-  color: #444;
+  color: #888;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -549,7 +549,7 @@
 .sp-genre-rank {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #333;
+  color: #777;
   width: 18px;
   text-align: right;
   flex-shrink: 0;
@@ -639,7 +639,7 @@
   margin: 0;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #444;
+  color: #888;
 }
 
 /* Skeletons */

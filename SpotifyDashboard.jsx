@@ -48,10 +48,16 @@ export default function SpotifyDashboard() {
       getRecentlyPlayed(10),
       getPlaylists(12),
     ]).then(([p, np, rp, pl]) => {
+      if (!p && !isLoggedIn()) {
+        setLoggedIn(false);
+        return;
+      }
       setProfile(p);
       setNowPlaying(np);
       setRecentlyPlayed(rp);
       setPlaylists(pl);
+    }).catch(() => {
+      if (!isLoggedIn()) setLoggedIn(false);
     });
   }, [loggedIn]);
 
@@ -64,8 +70,19 @@ export default function SpotifyDashboard() {
       getTopTracks(timeRange, 20),
       getTopArtists(timeRange, 10),
     ]).then(([tt, ta]) => {
-      setTopTracks(tt);
-      setTopArtists(ta);
+      if (!tt && !ta && !isLoggedIn()) {
+        setLoggedIn(false);
+        return;
+      }
+      setTopTracks(tt ?? { items: [] });
+      setTopArtists(ta ?? { items: [] });
+    }).catch(() => {
+      if (!isLoggedIn()) {
+        setLoggedIn(false);
+      } else {
+        setTopTracks({ items: [] });
+        setTopArtists({ items: [] });
+      }
     });
   }, [loggedIn, timeRange]);
 

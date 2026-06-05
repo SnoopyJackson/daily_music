@@ -115,7 +115,7 @@
 .date-label {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
-  color: #555;
+  color: #999;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   margin: 0 0 6px;
@@ -124,7 +124,7 @@
 .subtitle {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #444;
+  color: #888;
   letter-spacing: 0.3em;
   margin: 0 0 28px;
 }
@@ -195,7 +195,7 @@
 
 .challenge-detail {
   font-size: 13px;
-  color: #666;
+  color: #999;
   line-height: 1.7;
   font-family: 'DM Mono', monospace;
   margin: 0;
@@ -265,7 +265,7 @@
   padding: 4px 10px;
   border-radius: 2px;
   letter-spacing: 0.08em;
-  color: #555;
+  color: #999;
   background: #161616;
 }
 
@@ -296,7 +296,7 @@
   font-family: 'DM Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.3em;
-  color: #555;
+  color: #999;
   text-transform: uppercase;
   margin: 0 0 24px;
 }
@@ -325,6 +325,6 @@
   margin: 0;
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  color: #555;
+  color: #999;
   letter-spacing: 0.1em;
 }
