@@ -1,5 +1,5 @@
 const CLIENT_ID = 'fd42c8a8c59c492884edb422a9834d19';
-const REDIRECT_URI = window.location.origin;
+const REDIRECT_URI = window.location.origin + window.location.pathname.replace(/\/$/, '') + '/';
 const SCOPES = [
   'user-top-read',
   'user-read-recently-played',
