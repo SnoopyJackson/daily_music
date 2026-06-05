@@ -1520,3 +1520,345 @@
     grid-template-columns: repeat(7, 1fr);
   }
 }
+
+/* ============================================================
+   iOS Smartphone Responsive
+   ============================================================ */
+
+@media (max-width: 480px) {
+  /* Dashboard wrapper */
+  .sp-dashboard {
+    padding: 16px 14px 40px;
+  }
+
+  /* Login */
+  .sp-login {
+    padding: 32px 16px;
+  }
+
+  .sp-login-icon {
+    font-size: 44px;
+  }
+
+  .sp-login-title {
+    font-size: 20px;
+  }
+
+  .sp-login-desc {
+    font-size: 13px;
+  }
+
+  .sp-login-btn {
+    padding: 14px 28px;
+    font-size: 12px;
+    min-height: 44px;
+    width: 100%;
+  }
+
+  .sp-login-uri-box {
+    max-width: 100%;
+  }
+
+  .sp-login-uri {
+    font-size: 11px;
+  }
+
+  /* Profile */
+  .sp-profile {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .sp-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .sp-profile-name {
+    font-size: 14px;
+  }
+
+  .sp-logout-btn {
+    padding: 6px 10px;
+    font-size: 9px;
+    min-height: 32px;
+  }
+
+  /* Now Playing */
+  .sp-now-playing {
+    padding: 16px;
+  }
+
+  .sp-now-inner {
+    gap: 14px;
+  }
+
+  .sp-now-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .sp-now-track {
+    font-size: 15px;
+  }
+
+  .sp-now-artist {
+    font-size: 12px;
+  }
+
+  /* Stats header */
+  .sp-stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .sp-time-tabs {
+    width: 100%;
+  }
+
+  .sp-time-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 8px;
+    min-height: 36px;
+  }
+
+  /* Overview stat grid */
+  .sp-overview {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .sp-stat-card {
+    padding: 14px 12px;
+  }
+
+  .sp-stat-value {
+    font-size: 18px;
+  }
+
+  .sp-stat-label {
+    font-size: 9px;
+  }
+
+  /* Track list */
+  .sp-track-row {
+    padding: 8px 6px;
+    gap: 10px;
+  }
+
+  .sp-track-img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sp-track-name {
+    font-size: 12px;
+  }
+
+  .sp-track-meta {
+    font-size: 9px;
+  }
+
+  /* Artist grid */
+  .sp-artist-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .sp-artist-name {
+    font-size: 11px;
+  }
+
+  /* Album grid */
+  .sp-album-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Playlist grid */
+  .sp-playlist-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Charts */
+  .sp-charts-row {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .sp-chart-half {
+    min-width: 100%;
+  }
+
+  /* Genre bar names */
+  .sp-genre-name {
+    width: 120px;
+    font-size: 10px;
+  }
+
+  /* Activity chart */
+  .sp-activity-chart {
+    height: 100px;
+  }
+
+  /* Hour chart */
+  .sp-hour-chart {
+    height: 80px;
+  }
+
+  /* Discovery cards */
+  .sp-discovery {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .sp-disc-card {
+    padding: 16px 12px;
+  }
+
+  .sp-disc-value {
+    font-size: 22px;
+  }
+
+  /* Donut chart */
+  .sp-donut-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  /* Recommendations */
+  .sp-recs {
+    padding: 18px 16px;
+  }
+
+  .sp-recs-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sp-recs-challenge {
+    font-size: 17px;
+  }
+
+  .sp-recs-artist-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  /* Search */
+  .sp-search-section {
+    padding: 16px;
+  }
+
+  .sp-search-bar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sp-search-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+
+  .sp-search-count {
+    align-self: flex-end;
+  }
+
+  .sp-search-filters {
+    width: 100%;
+  }
+
+  .sp-filter-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 8px;
+    min-height: 36px;
+  }
+
+  /* Letter grid */
+  .sp-letter-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+  }
+
+  .sp-letter-btn {
+    padding: 6px 2px;
+    min-height: 36px;
+  }
+
+  .sp-letter-char {
+    font-size: 11px;
+  }
+
+  /* Heatmap */
+  .sp-heatmap-cell {
+    min-width: 8px;
+    min-height: 8px;
+  }
+
+  .sp-heatmap-grid {
+    gap: 2px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Network graph */
+  .sp-network-wrap {
+    padding: 10px;
+  }
+
+  /* Genre picker */
+  .sp-genre-picker {
+    max-height: 120px;
+  }
+
+  .sp-genre-chip {
+    font-size: 9px;
+    padding: 5px 8px;
+  }
+}
+
+/* Extra small iPhone SE */
+@media (max-width: 375px) {
+  .sp-dashboard {
+    padding: 12px 10px 36px;
+  }
+
+  .sp-overview {
+    gap: 6px;
+  }
+
+  .sp-stat-card {
+    padding: 10px 8px;
+  }
+
+  .sp-stat-value {
+    font-size: 16px;
+  }
+
+  .sp-now-img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .sp-now-track {
+    font-size: 14px;
+  }
+
+  .sp-artist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sp-recs-artist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sp-letter-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
