@@ -1755,18 +1755,41 @@
 
   /* Artist grid */
   .sp-artist-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .sp-artist-img {
+    width: 100%;
+    max-width: 70px;
+    margin: 0 auto 6px;
   }
 
   .sp-artist-name {
-    font-size: 11px;
+    font-size: 10px;
+  }
+
+  .sp-artist-genre {
+    font-size: 8px;
+  }
+
+  .sp-artist-rank {
+    font-size: 8px;
+    padding: 1px 4px;
   }
 
   /* Album grid */
   .sp-album-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .sp-album-name {
+    font-size: 10px;
+  }
+
+  .sp-album-artist {
+    font-size: 8px;
   }
 
   /* Playlist grid */
@@ -1943,7 +1966,13 @@
   }
 
   .sp-artist-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .sp-album-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
   }
 
   .sp-recs-artist-grid {
